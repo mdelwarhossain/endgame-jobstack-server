@@ -74,6 +74,8 @@ async function run() {
             res.send(friends);
         });
 
+        // comments
+
          // save friends
          app.post('/friends', async (req, res) => {
             const friend = req.body;
