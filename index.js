@@ -42,6 +42,7 @@ async function run() {
     try {
         const usersCollection = client.db("jobStack").collection("users");
         const postsCollection = client.db("jobStack").collection("posts");
+        const friendsCollection = client.db("jobStack").collection("friends");
 
         //get the posts from Createpost components
         app.post("/posts", async (req, res) => {
@@ -64,6 +65,14 @@ async function run() {
             res.send(result);
         })
 
+        // get all the users
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const friends = await usersCollection.find(query).toArray();
+            res.send(friends);
+        });
+
+
         // get friends
         app.get('/friends/:email', async (req, res) => {
             const email = req.params.email;
@@ -74,11 +83,8 @@ async function run() {
             res.send(friends);
         });
 
-        // comments
-        // comments
-
          // save friends
-         app.post('/friends', async (req, res) => {
+         app.post('/connection', async (req, res) => {
             const friend = req.body;
             const result = await friendsCollection.insertOne(friend);
             res.send(result);
