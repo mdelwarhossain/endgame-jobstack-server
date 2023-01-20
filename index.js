@@ -73,7 +73,7 @@ async function run() {
         });
 
 
-        // get friends
+        // get friends users
         app.get('/friends/:email', async (req, res) => {
             const email = req.params.email;
             const query = {
@@ -83,8 +83,8 @@ async function run() {
             res.send(friends);
         });
 
-         // save friends
-         app.post('/connection', async (req, res) => {
+        // save friends
+        app.post('/connection', async (req, res) => {
             const friend = req.body;
             const result = await friendsCollection.insertOne(friend);
             res.send(result);
