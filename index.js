@@ -43,6 +43,7 @@ async function run() {
         const usersCollection = client.db("jobStack").collection("users");
         const postsCollection = client.db("jobStack").collection("posts");
         const friendsCollection = client.db("jobStack").collection("friends");
+        const jobsCollection = client.db("jobStack").collection("jobs")
 
         //get the posts from Createpost components
         app.post("/posts", async (req, res) => {
@@ -62,6 +63,13 @@ async function run() {
             const user = req.body;
             console.log(user)
             const result = await usersCollection.insertOne(user);
+            res.send(result);
+        })
+        
+        app.post('/jobs', async (req, res) => {
+            const jobs = req.body;
+            console.log(jobs)
+            const result = await jobsCollection.insertOne(jobs);
             res.send(result);
         })
 
