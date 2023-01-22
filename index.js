@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -43,6 +43,7 @@ async function run() {
         const usersCollection = client.db("jobStack").collection("users");
         const postsCollection = client.db("jobStack").collection("posts");
         const friendsCollection = client.db("jobStack").collection("friends");
+        const jobsCollection = client.db("jobStack").collection("jobs");
 
         //get the posts from Createpost components
         app.post("/posts", async (req, res) => {
@@ -88,6 +89,29 @@ async function run() {
             const friend = req.body;
             const result = await friendsCollection.insertOne(friend);
             res.send(result);
+        });
+
+        //add a job to db
+        app.post("/addajob", async (req, res) => {
+            const job = req.body;
+            const result = await jobsCollection.insertOne(job);
+            res.send(result);
+        });
+
+         // get all the jobs
+         app.get('/jobs', async (req, res) => {
+            const query = {};
+            const jobs = await jobsCollection.find(query).toArray();
+            res.send(jobs);
+        });
+
+         // get a specific job
+         app.get('/job/:id', async (req, res) => {
+            const id = req.params.id; 
+            console.log(id);
+            const query = {_id: ObjectId(id)};
+            const job = await jobsCollection.findOne(query);
+            res.send(job);
         });
 
         // generate jwt
