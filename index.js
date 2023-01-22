@@ -124,6 +124,30 @@ async function run() {
       const comment = await commentsCollection.find(query).toArray();
       res.send(comment);
     });
+
+     //add a job to db
+     app.post("/addajob", async (req, res) => {
+        const job = req.body;
+        const result = await jobsCollection.insertOne(job);
+        res.send(result);
+    });
+
+     // get all the jobs
+     app.get('/jobs', async (req, res) => {
+        const query = {};
+        const jobs = await jobsCollection.find(query).toArray();
+        res.send(jobs);
+    });
+
+     // get a specific job
+     app.get('/job/:id', async (req, res) => {
+        const id = req.params.id; 
+        console.log(id);
+        const query = {_id: ObjectId(id)};
+        const job = await jobsCollection.findOne(query);
+        res.send(job);
+    });
+    
     // generate jwt
     // app.get('/jwt', async (req, res) => {
     //     const email = req.query.email;
