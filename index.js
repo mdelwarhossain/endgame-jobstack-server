@@ -44,6 +44,7 @@ async function run() {
     const postsCollection = client.db("jobStack").collection("posts");
     const friendsCollection = client.db("jobStack").collection("friends");
     const commentsCollection = client.db("jobStack").collection("comments");
+    const jobsCollection = client.db("jobStack").collection("jobs");
 
     //get the posts from Createpost components
     app.post("/posts", async (req, res) => {
@@ -139,13 +140,31 @@ async function run() {
         res.send(jobs);
     });
 
-     // get a specific job
+    // get all the users in hire route
+    app.get("/alluser", async (req, res) => {
+      const query = {};
+      const allUser = await usersCollection.find(query).toArray();
+      res.send(allUser);
+    });
+
+     // get a specific job by id
      app.get('/job/:id', async (req, res) => {
         const id = req.params.id; 
         console.log(id);
         const query = {_id: ObjectId(id)};
         const job = await jobsCollection.findOne(query);
         res.send(job);
+    });
+
+     // get a specific job by email
+     app.get('/job/:email', async (req, res) => {
+        const email = req.params.email; 
+        console.log(email);
+        const query = {
+          email: email
+        };
+        const jobPost = await jobsCollection.find(query).toArray();
+        res.send(jobPost);
     });
     
     // generate jwt
