@@ -157,7 +157,7 @@ async function run() {
     });
 
      // get a specific job by email
-     app.get('/job/:email', async (req, res) => {
+     app.get('/jobs/:email', async (req, res) => {
         const email = req.params.email; 
         console.log(email);
         const query = {
@@ -166,6 +166,14 @@ async function run() {
         const jobPost = await jobsCollection.find(query).toArray();
         res.send(jobPost);
     });
+
+    // delete a post
+    app.delete('/post/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await jobsCollection.deleteOne(filter);
+      res.send(result);
+  })
     
     // generate jwt
     // app.get('/jwt', async (req, res) => {
