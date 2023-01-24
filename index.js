@@ -91,6 +91,8 @@ async function run() {
       res.send(result);
     });
 
+ //likes added to db
+
     app.put("/updatelike/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
