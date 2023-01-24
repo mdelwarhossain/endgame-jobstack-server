@@ -128,18 +128,18 @@ async function run() {
       res.send(comment);
     });
 
-     //add a job to db
-     app.post("/addajob", async (req, res) => {
-        const job = req.body;
-        const result = await jobsCollection.insertOne(job);
-        res.send(result);
+    //add a job to db
+    app.post("/addajob", async (req, res) => {
+      const job = req.body;
+      const result = await jobsCollection.insertOne(job);
+      res.send(result);
     });
 
-     // get all the jobs
-     app.get('/jobs', async (req, res) => {
-        const query = {};
-        const jobs = await jobsCollection.find(query).toArray();
-        res.send(jobs);
+    // get all the jobs
+    app.get('/jobs', async (req, res) => {
+      const query = {};
+      const jobs = await jobsCollection.find(query).toArray();
+      res.send(jobs);
     });
 
     // get all the users in hire route
@@ -149,24 +149,23 @@ async function run() {
       res.send(allUser);
     });
 
-     // get a specific job by id
-     app.get('/job/:id', async (req, res) => {
-        const id = req.params.id; 
-        console.log(id);
-        const query = {_id: ObjectId(id)};
-        const job = await jobsCollection.findOne(query);
-        res.send(job);
+    // get a specific job by id
+    app.get('/job/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const job = await jobsCollection.findOne(query);
+      res.send(job);
     });
 
-     // get a specific job by email
-     app.get('/jobs/:email', async (req, res) => {
-        const email = req.params.email; 
-        console.log(email);
-        const query = {
-          email: email
-        };
-        const jobPost = await jobsCollection.find(query).toArray();
-        res.send(jobPost);
+    // get a specific job by email
+    app.get('/jobs/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = {
+        email: email
+      };
+      const jobPost = await jobsCollection.find(query).toArray();
+      res.send(jobPost);
     });
 
     // delete a post
@@ -175,8 +174,41 @@ async function run() {
       const filter = { _id: ObjectId(id) };
       const result = await jobsCollection.deleteOne(filter);
       res.send(result);
-  })
-    
+    })
+
+    // update a post
+    app.put("/editajob", async (req, res) => {
+      const id = req.body.id;
+      const filter = { _id: ObjectId(id) };
+      const job = req.body;
+      console.log(id, job);
+      const option = { upsert: true };
+      const updatedPost = {
+        $set: {
+          title: job.title,
+          location: job.location,
+          jobType: job.jobType,
+          category: job.category,
+          homeOffice: job.homeOffice,
+          availability: job.availability,
+          skills: job.skills,
+          aboutUs: job.aboutUs,
+          task: job.task,
+          profile: job.profile,
+          offer: job.offer,
+          vacancy: job.vacancy,
+          url: job.url,
+          salary: job.salary,
+        },
+      };
+      const result = await jobsCollection.updateOne(
+        filter,
+        updatedPost,
+        option
+      );
+      res.send(result);
+    });
+
     // generate jwt
     // app.get('/jwt', async (req, res) => {
     //     const email = req.query.email;
