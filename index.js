@@ -91,24 +91,7 @@ async function run() {
       res.send(result);
     });
 
-    app.put("/updatelike/:id", async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: ObjectId(id) };
-      const like = req.body;
-      console.log(like);
-      const option = { upsert: true };
-      const updatedlike = {
-        $set: {
-          likes: like.like,
-        },
-      };
-      const result = await postsCollection.updateOne(
-        filter,
-        updatedlike,
-        option
-      );
-      res.send(result);
-    });
+
 
     //comepoents collection
     app.post("/comments", async (req, res) => {
