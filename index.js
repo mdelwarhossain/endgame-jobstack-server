@@ -91,6 +91,8 @@ async function run() {
       res.send(result);
     });
 
+ //likes added to db
+
 
 
     //comepoents collection
