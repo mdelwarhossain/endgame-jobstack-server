@@ -63,7 +63,6 @@ async function run() {
     });
     app.post("/users", async (req, res) => {
       const user = req.body;
-      console.log(user);
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
@@ -99,7 +98,6 @@ async function run() {
       const emailQuery = req.query.email;
       const query = { email: emailQuery };
       const projects = await projectsCollection.find(query).toArray();
-      console.log(projects);
       res.send(projects);
     });
 
@@ -117,7 +115,6 @@ async function run() {
   const id = req.params.id;
   const filter = { _id: ObjectId(id) };
   const like = req.body;
-  console.log(like);
   const option = { upsert: true };
   const updatedlike = {
     $set: {
@@ -140,7 +137,6 @@ app.put("/usersQueryEmail/", async (req, res) => {
   const emailQuery = req.query.email;
   const query = { email: emailQuery };
   const post = req.body;
-  console.log(post)
   const option = { upsert: true };
 
   if(post.bannerImage){
@@ -251,7 +247,6 @@ app.put("/usersQueryEmail/", async (req, res) => {
     const query = { email: emailQuery };
     const user = await usersCollection.find(query).toArray();
     console.log(user);
-    res.send(user);
   });
 
 
@@ -292,10 +287,26 @@ app.put("/usersQueryEmail/", async (req, res) => {
       res.send(allUser);
     });
 
+   //get a individual user by email
+   app.get("/user/:email", async (req, res) => {
+    const email = req.params.email;
+    const query = { email: email };
+    const user = await usersCollection.findOne(query);
+    console.log(user);
+    res.send(user);
+  });
+
+   //get a individual user by id
+   app.get("/candidate/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id) };
+    const user = await usersCollection.findOne(query);
+    res.send(user);
+  });
+
     // get a specific job by id
     app.get('/job/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: ObjectId(id) };
       const job = await jobsCollection.findOne(query);
       res.send(job);
@@ -304,6 +315,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     // get a specific job by email
     app.get('/jobs/:email', async (req, res) => {
       const email = req.params.email;
+      console.log(email);
       const query = {
         email: email
       };
@@ -324,7 +336,6 @@ app.put("/usersQueryEmail/", async (req, res) => {
       const id = req.body.id;
       const filter = { _id: ObjectId(id) };
       const job = req.body;
-      console.log(id, job);
       const option = { upsert: true };
       const updatedPost = {
         $set: {
