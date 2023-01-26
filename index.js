@@ -45,6 +45,7 @@ async function run() {
     const friendsCollection = client.db("jobStack").collection("friends");
     const commentsCollection = client.db("jobStack").collection("comments");
     const jobsCollection = client.db("jobStack").collection("jobs");
+    const projectsCollection = client.db("jobStack").collection("projects");
 
     //get the posts from Createpost components
     app.post("/posts", async (req, res) => {
@@ -67,6 +68,13 @@ async function run() {
       res.send(result);
     });
 
+    //post projects
+    app.post("/projects", async (req, res) => {
+      const projects = req.body;
+      const result = await projectsCollection.insertOne(projects);
+      res.send(result);
+    });
+
     // get all the users
     app.get("/users", async (req, res) => {
       const query = {};
@@ -83,6 +91,19 @@ async function run() {
       const friends = await friendsCollection.find(query).toArray();
       res.send(friends);
     });
+
+
+
+    //get projects
+    app.get("/projects/", async (req, res) => {
+      const emailQuery = req.query.email;
+      const query = { email: emailQuery };
+      const projects = await projectsCollection.find(query).toArray();
+      console.log(projects);
+      res.send(projects);
+    });
+
+
 
     // save friends
     app.post("/connection", async (req, res) => {
@@ -110,6 +131,128 @@ async function run() {
   );
   res.send(result);
 });
+
+
+//adding user's images
+
+
+app.put("/usersQueryEmail/", async (req, res) => {
+  const emailQuery = req.query.email;
+  const query = { email: emailQuery };
+  const post = req.body;
+  console.log(post)
+  const option = { upsert: true };
+
+  if(post.bannerImage){
+
+    const updatedPost = {
+      $set: {
+        bannerImage:post.bannerImage
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.profileImage){
+    
+    const updatedPost = {
+      $set: {
+        profileImage:post.profileImage
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.firstName || post.lastName || post.headline){
+    const updatedPost = {
+      $set: {
+        firstName:post.firstName,
+        lastName:post.lastName,
+        headline:post.headline,
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.city || post.country){
+    const updatedPost = {
+      $set: {
+        city:post.city,
+        country:post.country
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.about){
+    const updatedPost = {
+      $set: {
+        about:post.about
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.school || post.university){
+    const updatedPost = {
+      $set: {
+        school:post.school,
+        university:post.university
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.skills){
+    const updatedPost = {
+      $set: {
+        skills:post.skills
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+
+
+});
+
+//profile image 
+
+// app.put("/usersQueryEmail/", async (req, res) => {
+//   const emailQuery = req.query.email;
+//   const query = { email: emailQuery };
+//   const post = req.body;
+//   console.log(post)
+//   const option = { upsert: true };
+
+//   const updatedPost = {
+//     $set: {
+//       profileImage: post.bannerImage,
+//     },
+//   };
+//   const result = await usersCollection.updateOne(query, updatedPost, option);
+//   res.send(result);
+// });
+
+
+
+
+   //get a individual user by email
+
+   app.get("/usersQueryEmail/", async (req, res) => {
+    const emailQuery = req.query.email;
+    const query = { email: emailQuery };
+    const user = await usersCollection.find(query).toArray();
+    console.log(user);
+    res.send(user);
+  });
 
 
     //comepoents collection
