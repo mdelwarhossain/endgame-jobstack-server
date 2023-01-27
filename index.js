@@ -75,6 +75,7 @@ async function run() {
       res.send(result);
     });
 
+    
     // get all the users
     app.get("/users", async (req, res) => {
       const query = {};
@@ -165,11 +166,10 @@ app.put("/usersQueryEmail/", async (req, res) => {
   res.send(result);
   }
 
-  if(post.firstName || post.lastName || post.headline){
+  if(post.name || post.headline){
     const updatedPost = {
       $set: {
-        firstName:post.firstName,
-        lastName:post.lastName,
+        name:post.name,
         headline:post.headline,
       }
     }
