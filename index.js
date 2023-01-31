@@ -103,11 +103,73 @@ async function run() {
 
 
 
-    // save friends
-    app.post("/connection", async (req, res) => {
-      const friend = req.body;
-      const result = await friendsCollection.insertOne(friend);
-      res.send(result);
+    
+    // add comments
+
+  //   app.put('/connection', async (req, res) => {
+  //     const id = req.params.email;
+  //     const requestEmail = req.body.requestEmail;
+  //     const filter = {email };
+  //     const options = { upsert: true };
+  //     const updatedDoc = {
+  //         $push: {
+  //             requestSent: requestEmail,
+  //         }
+  //     }
+  //     const result = await postsCollection.updateOne(filter, updatedDoc, options);
+  //     res.send(result);
+  // });
+
+    // send friend request
+    app.put('/connection', async (req, res) => {
+      const email = req.body.filterEmail;
+      const filter = {email}; 
+      const received = req.body.received;
+      const option = {upsert: true}; 
+      const updatedDoc = {
+        $push: {
+          requestReceived: {received},
+        },
+      };
+      const result1 = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        option
+      );
+      const email2 = req.body.filterEmail2; 
+      const filter2 = {email2}
+      const sent = req.body.sent;
+      const updatedDoc2 = {
+        $push: {
+          requestSent: {sent},
+        },
+      };
+      const result2 = await usersCollection.updateOne(
+        filter2,
+        updatedDoc2,
+        option
+      );
+      console.log(result1, result2);
+      res.send({result1, result2});
+    });
+
+
+    // get the user to access who send friend request
+    app.get("/friendrequest/:email", async (req, res) => {
+      const email = req.params.email; 
+      console.log(email);
+      const query = {email};
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
+
+    // get the user from received request
+    app.get("/receivedrequest/:email", async (req, res) => {
+      const email = req.params.email; 
+      console.log(email);
+      const query = {email};
+      const user = await usersCollection.findOne(query);
+      res.send(user);
     });
 
  //likes added to db
@@ -269,6 +331,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     //add a job to db
     app.post("/addajob", async (req, res) => {
       const job = req.body;
+      console.log(job);
       const result = await jobsCollection.insertOne(job);
       res.send(result);
     });
