@@ -74,6 +74,7 @@ async function run() {
       res.send(result);
     });
 
+    
     // get all the users
     app.get("/users", async (req, res) => {
       const query = {};
@@ -231,8 +232,7 @@ async function run() {
 
 
     //adding user's images
-
-
+    
     app.put("/usersQueryEmail/", async (req, res) => {
       const emailQuery = req.query.email;
       const query = { email: emailQuery };
@@ -248,6 +248,11 @@ async function run() {
         }
         const result = await usersCollection.updateOne(query, updatedPost, option);
         res.send(result);
+  if(post.name || post.headline){
+    const updatedPost = {
+      $set: {
+        name:post.name,
+        headline:post.headline,
       }
 
       if (post.profileImage) {
