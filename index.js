@@ -103,32 +103,32 @@ async function run() {
 
 
 
-    
+
     // add comments
 
-  //   app.put('/connection', async (req, res) => {
-  //     const id = req.params.email;
-  //     const requestEmail = req.body.requestEmail;
-  //     const filter = {email };
-  //     const options = { upsert: true };
-  //     const updatedDoc = {
-  //         $push: {
-  //             requestSent: requestEmail,
-  //         }
-  //     }
-  //     const result = await postsCollection.updateOne(filter, updatedDoc, options);
-  //     res.send(result);
-  // });
+    //   app.put('/connection', async (req, res) => {
+    //     const id = req.params.email;
+    //     const requestEmail = req.body.requestEmail;
+    //     const filter = {email };
+    //     const options = { upsert: true };
+    //     const updatedDoc = {
+    //         $push: {
+    //             requestSent: requestEmail,
+    //         }
+    //     }
+    //     const result = await postsCollection.updateOne(filter, updatedDoc, options);
+    //     res.send(result);
+    // });
 
     // send friend request
     app.put('/connection', async (req, res) => {
       const email = req.body.filterEmail;
-      const filter = {email}; 
+      const filter = { email };
       const received = req.body.received;
-      const option = {upsert: true}; 
+      const option = { upsert: true };
       const updatedDoc = {
         $push: {
-          requestReceived: {received},
+          requestReceived: { received },
         },
       };
       const result1 = await usersCollection.updateOne(
@@ -136,180 +136,218 @@ async function run() {
         updatedDoc,
         option
       );
-      const email2 = req.body.filterEmail2; 
-      const filter2 = {email2}
-      const sent = req.body.sent;
-      const updatedDoc2 = {
-        $push: {
-          requestSent: {sent},
-        },
-      };
-      const result2 = await usersCollection.updateOne(
-        filter2,
-        updatedDoc2,
-        option
-      );
-      console.log(result1, result2);
-      res.send({result1, result2});
+      // const email2 = req.body.filterEmail2;
+      // const filter2 = { email2 }
+      // const sent = req.body.sent;
+      // const updatedDoc2 = {
+      //   $push: {
+      //     requestSent: { sent },
+      //   },
+      // };
+      // const result2 = await usersCollection.updateOne(
+      //   filter2,
+      //   updatedDoc2,
+      //   option
+      // );
+      console.log(result1);
+      res.send(result1);
     });
+
+
 
 
     // get the user to access who send friend request
     app.get("/friendrequest/:email", async (req, res) => {
-      const email = req.params.email; 
+      const email = req.params.email;
       console.log(email);
-      const query = {email};
+      const query = { email };
       const user = await usersCollection.findOne(query);
       res.send(user);
     });
 
     // get the user from received request
     app.get("/receivedrequest/:email", async (req, res) => {
-      const email = req.params.email; 
+      const email = req.params.email;
       console.log(email);
-      const query = {email};
+      const query = { email };
       const user = await usersCollection.findOne(query);
       res.send(user);
     });
 
- //likes added to db
- app.put("/updatelike/:id", async (req, res) => {
-  const id = req.params.id;
-  const filter = { _id: ObjectId(id) };
-  const like = req.body;
-  const option = { upsert: true };
-  const updatedlike = {
-    $set: {
-      likes: like.like,
-    },
-  };
-  const result = await postsCollection.updateOne(
-    filter,
-    updatedlike,
-    option
-  );
-  res.send(result);
-});
+
+    // delete friend request
+    app.put('/requestdeclined/:email', async (req, res) => {
+      const email = req.params.email;
+      const received = req.body;
+      const filter = { email };
+      console.log(received);
+      const option = { upsert: true };
+      const updatedDoc = {
+        $pull: {
+          requestReceived: { received },
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        option
+      );
+      res.send(result);
+    });
+
+    //  // delete a friend request
+    //  app.delete('/requestdeclined/:email', async (req, res) => {
+    //   const query = req.params.email;
+    //   const email = req.body.email; 
+    //   const filter = { query };
+    //   const user = await usersCollection.findOne(filter);
+    //   user.requestReceived.map(request => {
+    //     if(request.received.email == email){
+    //       const result = await usersCollection.deleteOne(filter2);
+
+    //     }
+    //   })
+    //   res.send(result);
+    // })
+
+    //likes added to db
+    app.put("/updatelike/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const like = req.body;
+      const option = { upsert: true };
+      const updatedlike = {
+        $set: {
+          likes: like.like,
+        },
+      };
+      const result = await postsCollection.updateOne(
+        filter,
+        updatedlike,
+        option
+      );
+      res.send(result);
+    });
 
 
-//adding user's images
+    //adding user's images
 
 
-app.put("/usersQueryEmail/", async (req, res) => {
-  const emailQuery = req.query.email;
-  const query = { email: emailQuery };
-  const post = req.body;
-  const option = { upsert: true };
+    app.put("/usersQueryEmail/", async (req, res) => {
+      const emailQuery = req.query.email;
+      const query = { email: emailQuery };
+      const post = req.body;
+      const option = { upsert: true };
 
-  if(post.bannerImage){
+      if (post.bannerImage) {
 
-    const updatedPost = {
-      $set: {
-        bannerImage:post.bannerImage
+        const updatedPost = {
+          $set: {
+            bannerImage: post.bannerImage
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.profileImage){
-    
-    const updatedPost = {
-      $set: {
-        profileImage:post.profileImage
+      if (post.profileImage) {
+
+        const updatedPost = {
+          $set: {
+            profileImage: post.profileImage
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.firstName || post.lastName || post.headline){
-    const updatedPost = {
-      $set: {
-        firstName:post.firstName,
-        lastName:post.lastName,
-        headline:post.headline,
+      if (post.firstName || post.lastName || post.headline) {
+        const updatedPost = {
+          $set: {
+            firstName: post.firstName,
+            lastName: post.lastName,
+            headline: post.headline,
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.city || post.country){
-    const updatedPost = {
-      $set: {
-        city:post.city,
-        country:post.country
+      if (post.city || post.country) {
+        const updatedPost = {
+          $set: {
+            city: post.city,
+            country: post.country
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.about){
-    const updatedPost = {
-      $set: {
-        about:post.about
+      if (post.about) {
+        const updatedPost = {
+          $set: {
+            about: post.about
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.school || post.university){
-    const updatedPost = {
-      $set: {
-        school:post.school,
-        university:post.university
+      if (post.school || post.university) {
+        const updatedPost = {
+          $set: {
+            school: post.school,
+            university: post.university
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
-  if(post.skills){
-    const updatedPost = {
-      $set: {
-        skills:post.skills
+      if (post.skills) {
+        const updatedPost = {
+          $set: {
+            skills: post.skills
+          }
+        }
+        const result = await usersCollection.updateOne(query, updatedPost, option);
+        res.send(result);
       }
-    }
-    const result = await usersCollection.updateOne(query, updatedPost, option);
-  res.send(result);
-  }
 
 
 
-});
+    });
 
-//profile image 
+    //profile image 
 
-// app.put("/usersQueryEmail/", async (req, res) => {
-//   const emailQuery = req.query.email;
-//   const query = { email: emailQuery };
-//   const post = req.body;
-//   console.log(post)
-//   const option = { upsert: true };
+    // app.put("/usersQueryEmail/", async (req, res) => {
+    //   const emailQuery = req.query.email;
+    //   const query = { email: emailQuery };
+    //   const post = req.body;
+    //   console.log(post)
+    //   const option = { upsert: true };
 
-//   const updatedPost = {
-//     $set: {
-//       profileImage: post.bannerImage,
-//     },
-//   };
-//   const result = await usersCollection.updateOne(query, updatedPost, option);
-//   res.send(result);
-// });
+    //   const updatedPost = {
+    //     $set: {
+    //       profileImage: post.bannerImage,
+    //     },
+    //   };
+    //   const result = await usersCollection.updateOne(query, updatedPost, option);
+    //   res.send(result);
+    // });
 
 
 
 
-   //get a individual user by email
+    //get a individual user by email
 
-   app.get("/usersQueryEmail/", async (req, res) => {
-    const emailQuery = req.query.email;
-    const query = { email: emailQuery };
-    const user = await usersCollection.find(query).toArray();
-    console.log(user);
-  });
+    app.get("/usersQueryEmail/", async (req, res) => {
+      const emailQuery = req.query.email;
+      const query = { email: emailQuery };
+      const user = await usersCollection.find(query).toArray();
+      console.log(user);
+    });
 
 
     //comepoents collection
@@ -350,22 +388,22 @@ app.put("/usersQueryEmail/", async (req, res) => {
       res.send(allUser);
     });
 
-   //get a individual user by email
-   app.get("/user/:email", async (req, res) => {
-    const email = req.params.email;
-    const query = { email: email };
-    const user = await usersCollection.findOne(query);
-    console.log(user);
-    res.send(user);
-  });
+    //get a individual user by email
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      console.log(user);
+      res.send(user);
+    });
 
-   //get a individual user by id
-   app.get("/candidate/:id", async (req, res) => {
-    const id = req.params.id;
-    const query = { _id: ObjectId(id) };
-    const user = await usersCollection.findOne(query);
-    res.send(user);
-  });
+    //get a individual user by id
+    app.get("/candidate/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
 
     // get a specific job by id
     app.get('/job/:id', async (req, res) => {
@@ -391,6 +429,23 @@ app.put("/usersQueryEmail/", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await jobsCollection.deleteOne(filter);
+      res.send(result);
+    })
+
+
+
+
+
+
+
+
+
+
+    // delete a post
+    app.delete('/delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(filter);
       res.send(result);
     })
 
