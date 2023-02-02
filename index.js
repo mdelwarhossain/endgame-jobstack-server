@@ -84,11 +84,30 @@ async function run() {
     // get friends users
     app.get("/friends/:email", async (req, res) => {
       const email = req.params.email;
+      console.log(email);
       const query = {
         email: email,
       };
-      const friends = await friendsCollection.find(query).toArray();
-      res.send(friends);
+      const user = await usersCollection.findOne(query);
+      if(user.friends.length){
+        const users = await Promise.all(user.friends.map(async friend => {
+          console.log(friend);
+          const email = friend.friend.email; 
+          console.log(email);
+          const query2 = {
+            email: email,
+          }
+          const data = await usersCollection.findOne(query2)
+          console.log(data);
+          return data
+        }))
+        console.log(users);
+        return res.send(users)
+      }
+      else{
+
+        res.status.send('You have no connection');
+      }
     });
 
 
@@ -170,6 +189,35 @@ async function run() {
       const email = req.params.email;
       console.log(email);
       const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
+
+
+    // accept friend request
+    app.put('/friend/:email', async (req, res) => {
+      const email = req.params.email;
+      const friend = req.body;
+      const filter = { email };
+      console.log(friend);
+      const option = { upsert: true };
+      const updatedDoc = {
+        $addToSet: {
+          friends: { friend },
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        option
+      );
+      res.send(result);
+    });
+
+     //get a individual friend by id
+     app.get("/myfriend/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
       const user = await usersCollection.findOne(query);
       res.send(user);
     });
