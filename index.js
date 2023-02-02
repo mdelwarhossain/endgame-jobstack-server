@@ -84,11 +84,30 @@ async function run() {
     // get friends users
     app.get("/friends/:email", async (req, res) => {
       const email = req.params.email;
+      console.log(email);
       const query = {
         email: email,
       };
-      const friends = await friendsCollection.find(query).toArray();
-      res.send(friends);
+      const user = await usersCollection.findOne(query);
+      if(user.friends.length){
+        const users = await Promise.all(user.friends.map(async friend => {
+          console.log(friend);
+          const email = friend.friend.email; 
+          console.log(email);
+          const query2 = {
+            email: email,
+          }
+          const data = await usersCollection.findOne(query2)
+          console.log(data);
+          return data
+        }))
+        console.log(users);
+        return res.send(users)
+      }
+      else{
+
+        res.status.send('You have no connection');
+      }
     });
 
     //get projects
@@ -166,6 +185,38 @@ async function run() {
       res.send(user);
     });
 
+
+
+    // accept friend request
+    app.put('/friend/:email', async (req, res) => {
+      const email = req.params.email;
+      const friend = req.body;
+      const filter = { email };
+      console.log(friend);
+      const option = { upsert: true };
+      const updatedDoc = {
+        $addToSet: {
+          friends: { friend },
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        option
+      );
+      res.send(result);
+    });
+
+     //get a individual friend by id
+     app.get("/myfriend/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
+
+
+
     // delete friend request
     app.put("/requestdeclined/:email", async (req, res) => {
       const email = req.params.email;
@@ -220,116 +271,103 @@ async function run() {
       res.send(result);
     });
 
-    //adding user's images
 
-    app.put("/usersQueryEmail/", async (req, res) => {
-      const emailQuery = req.query.email;
-      const query = { email: emailQuery };
-      const post = req.body;
-      const option = { upsert: true };
+   //adding user's images
 
-      if (post.bannerImage) {
-        const updatedPost = {
-          $set: {
-            bannerImage: post.bannerImage,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
+
+app.put("/usersQueryEmail/", async (req, res) => {
+  const emailQuery = req.query.email;
+  const query = { email: emailQuery };
+  const post = req.body;
+  const option = { upsert: true };
+
+  if(post.bannerImage){
+
+    const updatedPost = {
+      $set: {
+        bannerImage:post.bannerImage
+
       }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
 
-      if (post.profileImage) {
-        const updatedPost = {
-          $set: {
-            profileImage: post.profileImage,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
-      }
+  if(post.profileImage){
+    
+    const updatedPost = {
+      $set: {
+        profileImage:post.profileImage
 
-      if (post.firstName || post.lastName || post.headline) {
-        const updatedPost = {
-          $set: {
-            firstName: post.firstName,
-            lastName: post.lastName,
-            headline: post.headline,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
       }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
 
-      if (post.city || post.country) {
-        const updatedPost = {
-          $set: {
-            city: post.city,
-            country: post.country,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
-      }
+  if(post.firstName || post.lastName || post.headline){
+    const updatedPost = {
+      $set: {
+        firstName:post.firstName,
+        lastName:post.lastName,
+        headline:post.headline,
 
-      if (post.about) {
-        const updatedPost = {
-          $set: {
-            about: post.about,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
       }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
 
-      if (post.school || post.university) {
-        const updatedPost = {
-          $set: {
-            school: post.school,
-            university: post.university,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
-      }
+  if(post.city || post.country){
+    const updatedPost = {
+      $set: {
+        city:post.city,
+        country:post.country
 
-      if (post.skills) {
-        const updatedPost = {
-          $set: {
-            skills: post.skills,
-          },
-        };
-        const result = await usersCollection.updateOne(
-          query,
-          updatedPost,
-          option
-        );
-        res.send(result);
       }
-    });
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.about){
+    const updatedPost = {
+      $set: {
+        about:post.about
+
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+  if(post.school || post.university){
+    const updatedPost = {
+      $set: {
+        school:post.school,
+        university:post.university
+
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+
+  if(post.skills){
+    const updatedPost = {
+      $set: {
+        skills:post.skills
+      }
+    }
+    const result = await usersCollection.updateOne(query, updatedPost, option);
+  res.send(result);
+  }
+
+
+
+});
+
 
     //profile image
 
