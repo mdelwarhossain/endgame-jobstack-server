@@ -110,8 +110,6 @@ async function run() {
       }
     });
 
-
-
     //get projects
     app.get("/projects/", async (req, res) => {
       const emailQuery = req.query.email;
@@ -119,9 +117,6 @@ async function run() {
       const projects = await projectsCollection.find(query).toArray();
       res.send(projects);
     });
-
-
-
 
     // add comments
 
@@ -140,7 +135,7 @@ async function run() {
     // });
 
     // send friend request
-    app.put('/connection', async (req, res) => {
+    app.put("/connection", async (req, res) => {
       const email = req.body.filterEmail;
       const filter = { email };
       const received = req.body.received;
@@ -172,9 +167,6 @@ async function run() {
       res.send(result1);
     });
 
-
-
-
     // get the user to access who send friend request
     app.get("/friendrequest/:email", async (req, res) => {
       const email = req.params.email;
@@ -192,6 +184,7 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send(user);
     });
+
 
 
     // accept friend request
@@ -223,8 +216,9 @@ async function run() {
     });
 
 
+
     // delete friend request
-    app.put('/requestdeclined/:email', async (req, res) => {
+    app.put("/requestdeclined/:email", async (req, res) => {
       const email = req.params.email;
       const received = req.body;
       const filter = { email };
@@ -246,7 +240,7 @@ async function run() {
     //  // delete a friend request
     //  app.delete('/requestdeclined/:email', async (req, res) => {
     //   const query = req.params.email;
-    //   const email = req.body.email; 
+    //   const email = req.body.email;
     //   const filter = { query };
     //   const user = await usersCollection.findOne(filter);
     //   user.requestReceived.map(request => {
@@ -292,6 +286,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     const updatedPost = {
       $set: {
         bannerImage:post.bannerImage
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
@@ -303,6 +298,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     const updatedPost = {
       $set: {
         profileImage:post.profileImage
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
@@ -315,6 +311,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
         firstName:post.firstName,
         lastName:post.lastName,
         headline:post.headline,
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
@@ -326,6 +323,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
       $set: {
         city:post.city,
         country:post.country
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
@@ -336,6 +334,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     const updatedPost = {
       $set: {
         about:post.about
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
@@ -347,11 +346,13 @@ app.put("/usersQueryEmail/", async (req, res) => {
       $set: {
         school:post.school,
         university:post.university
+
       }
     }
     const result = await usersCollection.updateOne(query, updatedPost, option);
   res.send(result);
   }
+
 
   if(post.skills){
     const updatedPost = {
@@ -367,7 +368,8 @@ app.put("/usersQueryEmail/", async (req, res) => {
 
 });
 
-    //profile image 
+
+    //profile image
 
     // app.put("/usersQueryEmail/", async (req, res) => {
     //   const emailQuery = req.query.email;
@@ -385,9 +387,6 @@ app.put("/usersQueryEmail/", async (req, res) => {
     //   res.send(result);
     // });
 
-
-
-
     //get a individual user by email
 
     app.get("/usersQueryEmail/", async (req, res) => {
@@ -396,7 +395,6 @@ app.put("/usersQueryEmail/", async (req, res) => {
       const user = await usersCollection.find(query).toArray();
       console.log(user);
     });
-
 
     //comepoents collection
     app.post("/comments", async (req, res) => {
@@ -423,7 +421,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     });
 
     // get all the jobs
-    app.get('/jobs', async (req, res) => {
+    app.get("/jobs", async (req, res) => {
       const query = {};
       const jobs = await jobsCollection.find(query).toArray();
       res.send(jobs);
@@ -454,7 +452,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
     });
 
     // get a specific job by id
-    app.get('/job/:id', async (req, res) => {
+    app.get("/job/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const job = await jobsCollection.findOne(query);
@@ -462,40 +460,31 @@ app.put("/usersQueryEmail/", async (req, res) => {
     });
 
     // get a specific job by email
-    app.get('/jobs/:email', async (req, res) => {
+    app.get("/jobs/:email", async (req, res) => {
       const email = req.params.email;
       console.log(email);
       const query = {
-        email: email
+        email: email,
       };
       const jobPost = await jobsCollection.find(query).toArray();
       res.send(jobPost);
     });
 
     // delete a post
-    app.delete('/post/:id', async (req, res) => {
+    app.delete("/post/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await jobsCollection.deleteOne(filter);
       res.send(result);
-    })
-
-
-
-
-
-
-
-
-
+    });
 
     // delete a post
-    app.delete('/delete/:id', async (req, res) => {
+    app.delete("/delete/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
       const result = await usersCollection.deleteOne(filter);
       res.send(result);
-    })
+    });
 
     // update a post
     app.put("/editajob", async (req, res) => {
@@ -545,6 +534,45 @@ app.put("/usersQueryEmail/", async (req, res) => {
       const query = { email: email };
       const about = await usersCollection.find(query).toArray();
       res.send(about);
+    });
+
+    app.put("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          rol: "admin",
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        options
+      );
+      res.send(result);
+    });
+    //for dashboard. find jobseekrs/recuriters seperatly
+    app.get("/buyerseller/:id", async (req, res) => {
+      let query = {};
+      if (req.params.id) {
+        query = { role: req.params.id };
+      }
+
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.delete("/deleteusers/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(filter);
+      res.send(result);
+    });
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send({ isAdmin: user?.rol === "admin" });
     });
   } finally {
   }
