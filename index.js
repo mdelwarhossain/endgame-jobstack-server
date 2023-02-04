@@ -111,8 +111,8 @@ async function run() {
     });
 
     //get projects
-    app.get("/projects/", async (req, res) => {
-      const emailQuery = req.query.email;
+    app.get("/projects/:email", async (req, res) => {
+      const emailQuery = req.params.email;
       const query = { email: emailQuery };
       const projects = await projectsCollection.find(query).toArray();
       res.send(projects);
@@ -275,8 +275,8 @@ async function run() {
    //adding user's images
 
 
-app.put("/usersQueryEmail/", async (req, res) => {
-  const emailQuery = req.query.email;
+app.put("/user/:email", async (req, res) => {
+  const emailQuery = req.params.email;
   const query = { email: emailQuery };
   const post = req.body;
   const option = { upsert: true };
@@ -389,12 +389,22 @@ app.put("/usersQueryEmail/", async (req, res) => {
 
     //get a individual user by email
 
-    app.get("/usersQueryEmail/", async (req, res) => {
-      const emailQuery = req.query.email;
-      const query = { email: emailQuery };
-      const user = await usersCollection.find(query).toArray();
-      console.log(user);
-    });
+//  app.get("/receivedrequest/:email", async (req, res) => {
+//       const email = req.params.email;
+//       console.log(email);
+//       const query = { email };
+//       const user = await usersCollection.findOne(query);
+//       res.send(user);
+//     });
+
+
+//     app.get("/usersQueryEmail/:email", async (req, res) => {
+//        const email = req.params.email;
+//       console.log(email);
+//       const query = { email };
+//       const user = await usersCollection.findOne(query);
+//       res.send(user);
+//     });
 
     //comepoents collection
     app.post("/comments", async (req, res) => {
