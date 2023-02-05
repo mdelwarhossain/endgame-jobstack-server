@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId, CURSOR_FLAGS } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -61,6 +61,20 @@ async function run() {
       const posts = await cursor.toArray();
       res.send(posts);
     });
+
+    //get all the posts from database for a specific user to show it in friend request candidate components
+    app.get("/posts/:email", async (req, res) => {
+      const email = req.params.email; 
+      console.log(email)
+      const query = {
+        email
+      };
+      const cursor = postsCollection.find(query).sort({ _id: -1 });
+      const posts = await cursor.toArray();
+      res.send(posts);
+    });
+
+    // add an user to the userscollection
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
@@ -84,24 +98,24 @@ async function run() {
     // get friends users
     app.get("/friends/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email);
+      // console.log(email);
       const query = {
         email: email,
       };
       const user = await usersCollection.findOne(query);
-      if(user.friends.length){
+      if(user?.friends?.length){
         const users = await Promise.all(user.friends.map(async friend => {
-          console.log(friend);
+          // console.log(friend);
           const email = friend.friend.email; 
-          console.log(email);
+          // console.log(email);
           const query2 = {
             email: email,
           }
           const data = await usersCollection.findOne(query2)
-          console.log(data);
+          // console.log(data);
           return data
         }))
-        console.log(users);
+        // console.log(users);
         return res.send(users)
       }
       else{
@@ -111,8 +125,8 @@ async function run() {
     });
 
     //get projects
-    app.get("/projects/", async (req, res) => {
-      const emailQuery = req.query.email;
+    app.get("/projects/:email", async (req, res) => {
+      const emailQuery = req.params.email;
       const query = { email: emailQuery };
       const projects = await projectsCollection.find(query).toArray();
       res.send(projects);
@@ -275,8 +289,8 @@ async function run() {
    //adding user's images
 
 
-app.put("/usersQueryEmail/", async (req, res) => {
-  const emailQuery = req.query.email;
+app.put("/user/:email", async (req, res) => {
+  const emailQuery = req.params.email;
   const query = { email: emailQuery };
   const post = req.body;
   const option = { upsert: true };
@@ -389,12 +403,22 @@ app.put("/usersQueryEmail/", async (req, res) => {
 
     //get a individual user by email
 
-    app.get("/usersQueryEmail/", async (req, res) => {
-      const emailQuery = req.query.email;
-      const query = { email: emailQuery };
-      const user = await usersCollection.find(query).toArray();
-      console.log(user);
-    });
+//  app.get("/receivedrequest/:email", async (req, res) => {
+//       const email = req.params.email;
+//       console.log(email);
+//       const query = { email };
+//       const user = await usersCollection.findOne(query);
+//       res.send(user);
+//     });
+
+
+//     app.get("/usersQueryEmail/:email", async (req, res) => {
+//        const email = req.params.email;
+//       console.log(email);
+//       const query = { email };
+//       const user = await usersCollection.findOne(query);
+//       res.send(user);
+//     });
 
     //comepoents collection
     app.post("/comments", async (req, res) => {
@@ -478,7 +502,7 @@ app.put("/usersQueryEmail/", async (req, res) => {
       res.send(result);
     });
 
-    // delete a post
+    // delete a user
     app.delete("/delete/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
