@@ -155,6 +155,9 @@ async function run() {
       const received = req.body.received;
       const option = { upsert: true };
       const updatedDoc = {
+        $set: {
+          sentStatus: true,
+        },
         $push: {
           requestReceived: { received },
         },
@@ -164,6 +167,7 @@ async function run() {
         updatedDoc,
         option
       );
+
       // const email2 = req.body.filterEmail2;
       // const filter2 = { email2 }
       // const sent = req.body.sent;
@@ -180,6 +184,7 @@ async function run() {
       console.log(result1);
       res.send(result1);
     });
+
 
     // get the user to access who send friend request
     app.get("/friendrequest/:email", async (req, res) => {
