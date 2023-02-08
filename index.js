@@ -46,6 +46,7 @@ async function run() {
     const commentsCollection = client.db("jobStack").collection("comments");
     const jobsCollection = client.db("jobStack").collection("jobs");
     const projectsCollection = client.db("jobStack").collection("projects");
+    const CourseCollection = client.db("jobStack").collection("Course");
 
     //get the posts from Createpost components
     app.post("/posts", async (req, res) => {
@@ -598,6 +599,14 @@ app.put("/user/:email", async (req, res) => {
       const user = await usersCollection.findOne(query);
       res.send({ isAdmin: user?.rol === "admin" });
     });
+
+    // Course route setup here
+    app.get("/course",async(req,res)=>{
+      const query = {};
+      const result = await CourseCollection.find(query).toArray();
+      res.send(result)
+    })
+
   } finally {
   }
 }
