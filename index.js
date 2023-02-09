@@ -109,6 +109,14 @@ async function run() {
       res.send(friends);
     });
 
+
+    // get all the recommended users
+    app.get("/recommendedusers/:email", async (req, res) => {
+      const query = {};
+      const friends = await usersCollection.find(query).toArray();
+      res.send(friends);
+    });
+
     //get messages
     app.get(
       "/messages/displayMessaages/:reciverId&:senderId",
@@ -255,7 +263,7 @@ async function run() {
       const email = req.params.email;
       const friend = req.body;
       const filter = { email };
-      // console.log(friend);
+      console.log(friend);
       const option = { upsert: true };
       const updatedDoc = {
         $addToSet: {
