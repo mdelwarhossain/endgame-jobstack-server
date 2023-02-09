@@ -88,8 +88,8 @@ async function run() {
       res.send(result);
     });
 
-    // get all the users
-    app.get("/users", async (req, res) => {
+    // get all the recommended user
+    app.get("/recommendedusers/:email", async (req, res) => {
       const query = {};
       const friends = await usersCollection.find(query).toArray();
       res.send(friends);
@@ -104,7 +104,7 @@ async function run() {
       };
       const user = await usersCollection.findOne(query);
       if(user?.friends?.length){
-        const users = await Promise.all(user.friends.map(async friend => {
+        const users = await Promise.all(user?.friends?.map(async friend => {
           // console.log(friend);
           const email = friend.friend.email; 
           // console.log(email);
@@ -120,7 +120,7 @@ async function run() {
       }
       else{
 
-        res.status.send('You have no connection');
+        res.send('You have no connection');
       }
     });
 
@@ -155,9 +155,6 @@ async function run() {
       const received = req.body.received;
       const option = { upsert: true };
       const updatedDoc = {
-        $set: {
-          sentStatus: true,
-        },
         $push: {
           requestReceived: { received },
         },
