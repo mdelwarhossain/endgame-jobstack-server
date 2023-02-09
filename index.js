@@ -6,6 +6,7 @@ const {
   ObjectId,
   CURSOR_FLAGS,
 } = require("mongodb");
+const { query } = require("express");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -277,6 +278,12 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send(user);
     });
+
+    app.get('/limitCourse',async (req,res) =>{
+      const query  = {};
+      const course = await CourseCollection.find().limit(3).toArray();
+      res.send(course)
+    })
 
     // delete friend request
     app.put("/requestdeclined/:email", async (req, res) => {
