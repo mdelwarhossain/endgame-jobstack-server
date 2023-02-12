@@ -173,7 +173,7 @@ async function run() {
     // get friends users
     app.get("/friends/:email", async (req, res) => {
       const email = req.params.email;
-      // console.log(email);
+      console.log(email);
       const query = {
         email: email,
       };
@@ -293,6 +293,7 @@ async function run() {
       const email = req.params.email;
       const friend1 = req.body;
       const frndEmail = req.body.email; 
+      console.log('friend email',frndEmail);
       const filter = { email };
       const filter2 = { 
         email: frndEmail 
@@ -306,6 +307,7 @@ async function run() {
         email: user.email,
         profileImage: user.profileImage
       }
+      console.log(friend2);
       const updatedDoc = {
         $addToSet: {
           friends:  friend1 ,
