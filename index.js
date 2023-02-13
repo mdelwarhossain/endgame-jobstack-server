@@ -62,6 +62,16 @@ async function run() {
       res.send(result);
     });
 
+    //myPostDetails
+
+     app.get('/postDetails/:id',async(req,res) =>{
+       const id = req.params.id;
+       const query = { _id: ObjectId(id) };
+       const collection = await postsCollection.findOne(query);
+       res.send(collection) 
+        
+    })
+
     //get all the posts from database. show it in {NewsFeedposts} Component
     app.get("/allposts", async (req, res) => {
       const query = {};
@@ -109,6 +119,13 @@ async function run() {
       const friends = await usersCollection.find(query).toArray();
       res.send(friends);
     });
+
+    app.get('/myPost/:email',async (req,res) =>{
+      const email = req.params.email;
+      const query={email}
+      const posts = await postsCollection.find(query).toArray();
+      res.send(posts)
+    })
 
 
     // get all the recommended users
