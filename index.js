@@ -135,6 +135,35 @@ async function run() {
       res.send(friends);
     });
 
+    //  // get all the recommended users
+    //  app.get("/recommendedusers/:email", async (req, res) => {
+    //   const email1 = req.params.email;
+    //   // console.log(email);
+    //   const query = {
+    //     email: email1,
+    //   };
+    //   const user = await usersCollection.findOne(query);
+    //   if (user?.friends?.length) {
+    //     const users = await Promise.all(
+    //       user.friends.map(async (frnd) => {
+    //         // console.log(friend);
+    //         const email = frnd.friend.email;
+    //         // console.log(email);
+    //         const query2 = { 
+    //           email: !email
+    //         };
+    //         const data = await usersCollection.findOne(query2);
+    //         // console.log(data);
+    //         return data;
+    //       })
+    //     );
+    //     // console.log(users);
+    //     return res.send(users);
+    //   } else {
+    //     res.send("You have no connection");
+    //   }
+    // });
+
     //get messages
     app.get(
       "/messages/displayMessaages/:reciverId&:senderId",
@@ -161,7 +190,7 @@ async function run() {
     // get friends users
     app.get("/friends/:email", async (req, res) => {
       const email = req.params.email;
-      // console.log(email);
+      console.log(email);
       const query = {
         email: email,
       };
@@ -170,7 +199,7 @@ async function run() {
         const users = await Promise.all(
           user.friends.map(async (friend) => {
             // console.log(friend);
-            const email = friend.friend.email;
+            const email = friend.email;
             // console.log(email);
             const query2 = {
               email: email,
@@ -279,21 +308,48 @@ async function run() {
     // accept friend request
     app.put("/friend/:email", async (req, res) => {
       const email = req.params.email;
-      const friend = req.body;
+      const friend1 = req.body;
+      const frndEmail = req.body.email; 
+      console.log('friend email',frndEmail);
       const filter = { email };
-      console.log(friend);
+      const filter2 = { 
+        email: frndEmail 
+      };
+      
+      console.log(friend1);
       const option = { upsert: true };
+      const user = await usersCollection.findOne(filter); 
+      const friend2 = {
+        name: user.name,
+        email: user.email,
+        profileImage: user.profileImage
+      }
+      console.log(friend2);
       const updatedDoc = {
         $addToSet: {
-          friends: { friend },
+          friends:  friend1 ,
         },
       };
+      const updatedDoc2 = {
+        $addToSet: {
+          friends:  friend2 ,
+        },
+      };
+      console.log(updatedDoc, updatedDoc2);
       const result = await usersCollection.updateOne(
         filter,
         updatedDoc,
         option
       );
-      res.send(result);
+      const result2 = await usersCollection.updateOne(
+        filter2,
+        updatedDoc2,
+        option
+      );
+      res.send({result, result2});
+
+
+
     });
 
     //get a individual friend by id
