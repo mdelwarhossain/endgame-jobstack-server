@@ -13,8 +13,17 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 // middleware
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
+
+app.use(cors({
+  origin:"*",
+  methods:["GET","POST","PUT","DELETE"]
+
+}))
+
+
+
 
 const uri = `mongodb+srv://jobstack:yDpXnq0bUjaKatUw@cluster0.ziqz1ow.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri);
