@@ -130,9 +130,34 @@ async function run() {
 
     // get all the recommended users
     app.get("/recommendedusers/:email", async (req, res) => {
-      const query = {};
-      const friends = await usersCollection.find(query).toArray();
-      res.send(friends);
+      const email = req.params.email; 
+      console.log(email);
+      const query1 = {
+        email
+      }
+      const user = await usersCollection.findOne(query1); 
+      const query2 = {};
+      const users = await usersCollection.find(query2).toArray();
+
+      const data = users.filter(({email}) => email !== user.email)
+      if (data){
+        res.send(data)
+      }
+
+      // if(user.friends?.length){
+      //   const friendsEmail = user.friends.map(friend =>  friend.email); 
+      //   console.log(friendsEmail);
+      //   const data =  users.find(({email}) => friendsEmail.includes(!email) && email !== user.email
+      //   )
+      //   res.send(data)
+      // }
+      // else {
+      //   users.filter(({email}) => {
+      //     const data = email !== user.email
+      //     res.send(data)
+      //   })
+      // }
+      
     });
 
     //  // get all the recommended users
@@ -615,6 +640,14 @@ async function run() {
 
     //get a individual user by id
     app.get("/candidate/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
+
+    //get a individual user by id in contact component
+    app.get("/contact/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const user = await usersCollection.findOne(query);
