@@ -648,6 +648,16 @@ async function run() {
       res.send(user);
     });
 
+    //get a individual candidate by email in resume
+    app.get("/candidateresume/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      // console.log(user);
+      res.send(user);
+    });
+
     //get a individual user by id
     app.get("/candidate/:id", async (req, res) => {
       const id = req.params.id;
