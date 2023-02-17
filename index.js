@@ -157,9 +157,7 @@ async function run() {
       const users = await usersCollection.find(query2).toArray();
 
       const data = users.filter(({email}) => email !== user.email)
-      if (data){
-        res.send(data)
-      }
+      res.send(data)
 
       // if(user.friends?.length){
       //   const friendsEmail = user.friends.map(friend =>  friend.email); 
@@ -293,14 +291,14 @@ async function run() {
     // send friend request
     app.put("/connection", async (req, res) => {
       const email = req.body.filterEmail;
+      const sentBy = req.body.filterEmail2; 
+      console.log(sentBy);
       const filter = { email };
       const received = req.body.received;
       const option = { upsert: true };
       const updatedDoc = {
-        $set: {
-          sentStatus: true,
-        },
         $push: {
+          requests: sentBy,
           requestReceived: { received },
         },
       };
@@ -649,6 +647,17 @@ async function run() {
     //get a individual user by email
     app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
+      console.log(email);
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      // console.log(user);
+      res.send(user);
+    });
+
+    //get a individual candidate by email in resume
+    app.get("/candidateresume/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
       const query = { email: email };
       const user = await usersCollection.findOne(query);
       // console.log(user);
