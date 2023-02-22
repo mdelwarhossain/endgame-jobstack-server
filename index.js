@@ -16,11 +16,7 @@ const app = express();
 // app.use(cors());
 app.use(express.json());
 
-// app.use(cors({
-//   origin:"*",
-//   methods:["GET","POST","PUT","DELETE"]
 
-// }))
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
@@ -28,6 +24,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Max-Age', '3600'); // Set to 1 hour
   next();
 });
+
 
 
 
@@ -70,6 +67,7 @@ async function run() {
     const jobsCollection = client.db("jobStack").collection("jobs");
     const projectsCollection = client.db("jobStack").collection("projects");
     const CourseCollection = client.db("jobStack").collection("Course");
+    const networkCollection = client.db("jobStack").collection("network");
     const messageCollection = client.db("jobStack").collection("messages");
     const resumeCollection = client.db("jobStack").collection("resume");
 
@@ -82,12 +80,12 @@ async function run() {
 
     //myPostDetails
 
-     app.get('/postDetails/:id',async(req,res) =>{
-       const id = req.params.id;
-       const query = { _id: ObjectId(id) };
-       const collection = await postsCollection.findOne(query);
-       res.send(collection) 
-        
+    app.get('/postDetails/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const collection = await postsCollection.findOne(query);
+      res.send(collection)
+
     })
 
     //get all the posts from database. show it in {NewsFeedposts} Component
@@ -302,9 +300,9 @@ async function run() {
       res.send(friends);
     });
 
-    app.get('/myPost/:email',async (req,res) =>{
+    app.get('/myPost/:email', async (req, res) => {
       const email = req.params.email;
-      const query={email}
+      const query = { email }
       const posts = await postsCollection.find(query).toArray();
       res.send(posts)
     })
@@ -312,16 +310,16 @@ async function run() {
 
     // get all the recommended users
     app.get("/recommendedusers/:email", async (req, res) => {
-      const email = req.params.email; 
+      const email = req.params.email;
       console.log(email);
       const query1 = {
         email
       }
-      const user = await usersCollection.findOne(query1); 
+      const user = await usersCollection.findOne(query1);
       const query2 = {};
       const users = await usersCollection.find(query2).toArray();
 
-      const data = users.filter(({email}) => email !== user.email)
+      const data = users.filter(({ email }) => email !== user.email)
       res.send(data)
 
       // if(user.friends?.length){
@@ -337,7 +335,7 @@ async function run() {
       //     res.send(data)
       //   })
       // }
-      
+
     });
 
     //  // get all the recommended users
@@ -456,7 +454,7 @@ async function run() {
     // send friend request
     app.put("/connection", async (req, res) => {
       const email = req.body.filterEmail;
-      const sentBy = req.body.filterEmail2; 
+      const sentBy = req.body.filterEmail2;
       console.log(sentBy);
       const filter = { email };
       const received = req.body.received;
@@ -514,16 +512,16 @@ async function run() {
     app.put("/friend/:email", async (req, res) => {
       const email = req.params.email;
       const friend1 = req.body;
-      const frndEmail = req.body.email; 
-      console.log('friend email',frndEmail);
+      const frndEmail = req.body.email;
+      console.log('friend email', frndEmail);
       const filter = { email };
-      const filter2 = { 
-        email: frndEmail 
+      const filter2 = {
+        email: frndEmail
       };
-      
+
       console.log(friend1);
       const option = { upsert: true };
-      const user = await usersCollection.findOne(filter); 
+      const user = await usersCollection.findOne(filter);
       const friend2 = {
         name: user.name,
         email: user.email,
@@ -532,12 +530,12 @@ async function run() {
       console.log(friend2);
       const updatedDoc = {
         $addToSet: {
-          friends:  friend1 ,
+          friends: friend1,
         },
       };
       const updatedDoc2 = {
         $addToSet: {
-          friends:  friend2 ,
+          friends: friend2,
         },
       };
       console.log(updatedDoc, updatedDoc2);
@@ -551,7 +549,7 @@ async function run() {
         updatedDoc2,
         option
       );
-      res.send({result, result2});
+      res.send({ result, result2 });
 
 
 
@@ -565,10 +563,16 @@ async function run() {
       res.send(user);
     });
 
-    app.get('/limitCourse',async (req,res) =>{
-      const query  = {};
+    app.get('/limitCourse', async (req, res) => {
+      const query = {};
       const course = await CourseCollection.find().limit(3).toArray();
       res.send(course)
+    })
+    // limit network
+    app.get('/limitNetwork', async (req, res) => {
+      const query = {};
+      const network = await usersCollection.find().limit(3).toArray();
+      res.send(network)
     })
 
     // delete friend request
