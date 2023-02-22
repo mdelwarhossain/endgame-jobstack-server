@@ -425,6 +425,26 @@ async function run() {
       res.send(result);
     });
 
+    // delete friend 
+    app.put("/deletefriend/:email", async (req, res) => {
+      const email = req.params.email;
+      const received = req.body;
+      const filter = { email };
+      // console.log(received);
+      const option = { upsert: true };
+      const updatedDoc = {
+        $pull: {
+          friends:  received ,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updatedDoc,
+        option
+      );
+      res.send(result);
+    });
+
     //  // delete a friend request
     //  app.delete('/requestdeclined/:email', async (req, res) => {
     //   const query = req.params.email;
@@ -632,7 +652,7 @@ async function run() {
     // get all the jobs
     app.get("/jobs", async (req, res) => {
       const query = {};
-      const jobs = await jobsCollection.find(query).toArray();
+      const jobs = await jobsCollection.find(query).sort({postedOn: -1}).toArray();
       res.send(jobs);
     });
 
@@ -694,7 +714,7 @@ async function run() {
       const query = {
         email: email,
       };
-      const jobPost = await jobsCollection.find(query).toArray();
+      const jobPost = await jobsCollection.find(query).sort({postedOn: -1}).toArray();
       res.send(jobPost);
     });
 
@@ -713,6 +733,20 @@ async function run() {
       const result = await usersCollection.deleteOne(filter);
       res.send(result);
     });
+
+    // // delete a friend
+    // app.delete("/deletefriend/:email", async (req, res) => {
+    //   const email = req.params.email;
+    //   console.log(email);
+    //   const query = { 
+    //     email
+    //    };
+    //   const filter = req.body.email; 
+    //   console.log(filter);
+    //   const user = await usersCollection.findOne(query);
+    //   const result = await user.friends.deleteOne(filter)
+    //   res.send(result);
+    // });
 
     // update a post
     app.put("/editajob", async (req, res) => {
