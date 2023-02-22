@@ -71,6 +71,7 @@ async function run() {
     const projectsCollection = client.db("jobStack").collection("projects");
     const CourseCollection = client.db("jobStack").collection("Course");
     const messageCollection = client.db("jobStack").collection("messages");
+    const resumeCollection = client.db("jobStack").collection("resume");
 
     //get the posts from Createpost components
     app.post("/posts", async (req, res) => {
@@ -122,6 +123,170 @@ async function run() {
       const result = await projectsCollection.insertOne(projects);
       res.send(result);
     });
+
+    //resume collection
+
+    // app.post("/createResume", async (req,res) =>{
+    //   const resumeCreatorEmail = req.body;
+    //   const result = await resumeCollection.insertOne(resumeCreatorEmail);
+    //   res.send(result)
+    // })
+
+    app.post("/createResume", async (req, res) => {
+      const resumeData = req.body;
+      const resumeQuery = { email: resumeData.email };
+      
+      // Search for a document with the same email
+      const existingResume = await resumeCollection.findOne(resumeQuery);
+      
+      if (existingResume) {
+        // If a document with the same email already exists, return an error
+        return res.status(409).send("Resume with the same email already exists.");
+      } else {
+        // If a document with the same email does not exist, insert the new document
+        const result = await resumeCollection.insertOne(resumeData);
+        res.send(result);
+      }
+    });
+
+
+
+
+
+    //get resumeDetails
+
+    app.get("/resumeDetails/:email", async (req,res) =>{
+      const email = req.params.email;
+      const query = {email}
+      const result = await resumeCollection.findOne(query);
+      res.send(result) 
+    })
+    
+
+    app.put("/resumeDetails/:email", async (req, res) => {
+      const emailQuery = req.params.email;
+      const query = { email: emailQuery };
+      const post = req.body;
+      const jobDetails = req.body;
+      console.log(jobDetails)
+      const option = { upsert: true };
+
+
+  
+
+
+
+       if (post.school || post.university) {
+        const updatedPost = {
+          $set: {
+            school: post.school,
+            university: post.university,
+          },
+        };
+        const result = await resumeCollection.updateOne(
+          query,
+          updatedPost,
+          option
+        );
+        res.send(result);
+      }
+
+      if (post.skills) {
+        const updatedPost = {
+          $set: {
+            skills: post.skills,
+          },
+        };
+        const result = await resumeCollection.updateOne(
+          query,
+          updatedPost,
+          option
+        );
+        res.send(result);
+      }
+
+   if(post.Organization && post.Role) {
+     const updatedPost = {
+    $addToSet: {
+      Job: { $each: [jobDetails] }
+    }
+  };
+
+  const result = await resumeCollection.updateOne(
+    query,
+    updatedPost,
+    option
+  );
+
+  res.send(result);
+   }
+
+   if(post.projectName && post.projectLink && post.projectDescription) {
+     const updatedPost = {
+    $addToSet: {
+      Projects: { $each: [post] }
+    }
+  };
+
+  const result = await resumeCollection.updateOne(
+    query,
+    updatedPost,
+    option
+  );
+
+  res.send(result);
+   }
+
+
+    });
+
+
+    //     if (post.school || post.university) {
+  //       const updatedPost = {
+  //         $set: {
+  //           school: post.school,
+  //           university: post.university,
+  //         },
+  //       };
+  //       const result = await resumeCollection.updateOne(
+  //         query,
+  //         updatedPost,
+  //         option
+  //       );
+  //       res.send(result);
+  //     }
+
+  //     if (post.skills) {
+  //       const updatedPost = {
+  //         $set: {
+  //           skills: post.skills,
+  //         },
+  //       };
+  //       const result = await resumeCollection.updateOne(
+  //         query,
+  //         updatedPost,
+  //         option
+  //       );
+  //       res.send(result);
+  //     }
+
+  //   const updatedPost = {
+  //   $addToSet: {
+  //     Job: { $each: [jobDetails] }
+  //   }
+  // };
+
+  // const result = await resumeCollection.updateOne(
+  //   query,
+  //   updatedPost,
+  //   option
+  // );
+
+  // res.send(result);
+
+
+  
+
 
     //message collection
     app.post("/messages", async (req, res) => {
