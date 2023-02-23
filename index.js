@@ -568,12 +568,35 @@ async function run() {
       const course = await CourseCollection.find().limit(3).toArray();
       res.send(course)
     })
+
+
+
+
+
     // limit network
-    app.get('/limitNetwork', async (req, res) => {
-      const query = {};
-      const network = await usersCollection.find().limit(3).toArray();
-      res.send(network)
-    })
+    // app.get('/limitNetwork/:email', async (req, res) => {
+    //   const email = req.params.email;
+    //   const query = {};
+    //   const network = await usersCollection.find().limit(3).toArray();
+    //   const displayFrnds = network.filter((frnd) => frnd.email !== email);
+    //   res.send(displayFrnds)
+    // })
+
+    app.get('/limitNetwork/:email', async (req, res) => {
+      const email = req.params.email;
+      const network = await usersCollection.find().toArray();
+      const firstThreeFrnds = network.slice(0, 3);
+      const displayFrnds = firstThreeFrnds.filter((frnd) => frnd.email !== email);
+      
+      if (displayFrnds.length < 3) {
+        const remainingFrnds = network.slice(3).filter((frnd) => frnd.email !== email);
+        const nextThreeFrnds = remainingFrnds.slice(0, 3 - displayFrnds.length);
+        displayFrnds.push(...nextThreeFrnds);
+      }
+    
+      res.send(displayFrnds);
+    });
+    
 
     // delete friend request
     app.put("/requestdeclined/:email", async (req, res) => {
